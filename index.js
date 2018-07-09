@@ -19,7 +19,6 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, client) { //m
 app.get('/', function (req, res) {
     let collection = db.collection('todos')
     collection.find({
-        "completed": "false",
         "deleted": "false",
     }).toArray(function (err, docs) {
         res.send(docs)
