@@ -31,18 +31,18 @@ app.post('/add', function (req, res) {
     if (
         (taskData.hasOwnProperty('taskName')) && (taskData.taskName)
         && (taskData.hasOwnProperty('description'))
-        && (taskData.hasOwnProperty('completed')) && (taskData.completed == "false")
-        && (taskData.hasOwnProperty('deleted')) && (taskData.deleted == "false")
+        && (taskData.hasOwnProperty('completed')) && (taskData.completed === "false")
+        && (taskData.hasOwnProperty('deleted')) && (taskData.deleted === "false")
     ) {
         collection.insertOne(taskData, function (err) {
             if (err) {
-                res.send('error')
+                res.send('error inserting into db')
             } else {
-                res.send('task added!')
+                res.send(taskData)
             }
         })
     } else {
-        res.send('task data error')
+        res.send('missing data')
     }
 })
 
