@@ -1,15 +1,17 @@
 const express = require('express')
 const app = express()
-app.use(express.json());       // to support JSON-encoded bodies
-app.use(express.urlencoded()); // to support URL-encoded bodies
+
+app.use(express.json())       // to support JSON-encoded bodies
+app.use(express.urlencoded({ extended: true })) // to support URL-encoded bodies
 
 const MongoClient = require('mongodb').MongoClient
 const url = 'mongodb://localhost:27017/todo'
 const ObjectID = require('mongodb').ObjectID
 
+const port = 3000
 let db
 
-MongoClient.connect(url, function (err, client) { //mongo db connection
+MongoClient.connect(url, { useNewUrlParser: true }, function (err, client) { //mongo db connection
     db = client.db('todo')
     console.log('connected to todo mongo db')
 })
@@ -17,7 +19,6 @@ MongoClient.connect(url, function (err, client) { //mongo db connection
 app.get('/', function (req, res) {
     let collection = db.collection('todos')
     collection.find({
-        "completed": "false",
         "deleted": "false",
     }).toArray(function (err, docs) {
         res.send(docs)
@@ -35,13 +36,13 @@ app.post('/add', function (req, res) {
     ) {
         collection.insertOne(taskData, function (err) {
             if (err) {
-                res.send('error')
+                res.send('error inserting into db')
             } else {
-                res.send('task added!')
+                res.send(taskData)
             }
         })
     } else {
-        res.send('task data error')
+        res.send('missing data')
     }
 })
 
@@ -77,7 +78,7 @@ app.delete('/delete', function (req, res) {
     })
 })
 
-app.listen(3000, function(){
-    console.log('otterAPI is running');
+app.listen(port, function(){
+    console.log('otterAPI is running on port:' + port);
 })
 
