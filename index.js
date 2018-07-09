@@ -1,13 +1,15 @@
 const express = require('express')
 const app = express()
 
-app.use(express.json());       // to support JSON-encoded bodies
-app.use(express.urlencoded({ extended: true })); // to support URL-encoded bodies
+app.use(express.json())       // to support JSON-encoded bodies
+app.use(express.urlencoded({ extended: true })) // to support URL-encoded bodies
 
 const MongoClient = require('mongodb').MongoClient
 const url = 'mongodb://localhost:27017/todo'
 const ObjectID = require('mongodb').ObjectID
 
+const collection = db.collection('todos')
+const port = 3000
 let db
 
 MongoClient.connect(url, { useNewUrlParser: true }, function (err, client) { //mongo db connection
@@ -16,7 +18,6 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, client) { //m
 })
 
 app.get('/', function (req, res) {
-    let collection = db.collection('todos')
     collection.find({
         "completed": "false",
         "deleted": "false",
@@ -26,7 +27,6 @@ app.get('/', function (req, res) {
 })
 
 app.post('/add', function (req, res) {
-    let collection = db.collection('todos')
     let taskData = req.body
     if (
         (taskData.hasOwnProperty('taskName')) && (taskData.taskName)
@@ -47,7 +47,6 @@ app.post('/add', function (req, res) {
 })
 
 app.put('/completed', function (req, res) {
-    let collection = db.collection('todos')
     let _id = req.body._id
     collection.updateOne({'_id':ObjectID(_id)}, {
         $set: {
@@ -63,7 +62,6 @@ app.put('/completed', function (req, res) {
 })
 
 app.delete('/delete', function (req, res) {
-    let collection = db.collection('todos')
     let _id = req.body._id
     collection.updateOne({'_id':ObjectID(_id)}, {
         $set: {
@@ -77,8 +75,6 @@ app.delete('/delete', function (req, res) {
         }
     })
 })
-
-let port = 3000;
 
 app.listen(port, function(){
     console.log('otterAPI is running on port:' + port);
